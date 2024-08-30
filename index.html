@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>Quiz</title>
+
+    <style>
+      #queContainer {
+        font-family: "Noto Serif", serif;
+        margin: 20px;
+        padding: 10px;
+        border: 2px solid rgb(212, 213, 241);
+        border-radius: 10px;
+        text-align: center;
+      }
+
+      button {
+        font-family: "Noto Serif", serif;
+        border: none;
+        border-radius: 20px;
+        width: 10rem ;
+        height: 50px;
+        background-color: rgb(65, 110, 207);
+        color: white;
+        font-size: 1em;
+      }
+
+      button:hover {
+        background-color: rgb(11, 74, 209);
+      }
+
+      #buttons {
+        display: flex;
+        justify-content: space-around;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="queContainer"></div>
+    <div id="buttons">
+      <button id="trueAns" class="btn" onclick="ansTrue()">True</button>
+      <button id="falseAns" class="btn" onclick="ansFalse()">False</button>
+      <button id="skip" class="btn" onclick="skipQue()">Skip</button>
+    </div>
+    <script>
+      //fetching api for questions
+      fetch(
+        "https://opentdb.com/api.php?amount=25&category=9&difficulty=medium&type=boolean"
+      )
+        .then((response) => response.json())
+        .then((quiz) => {
+          let queDiv = document.getElementById("queContainer");
+
+          let currentIndex = 0; //to print question according their index
+          let currentQue;
+
+          //displaying questions
+          displayQuestion = () => {
+            try {
+              if (currentIndex <= quiz.results.length) {
+                currentQue = quiz.results[currentIndex].question; //display questions
+                queDiv.innerHTML = `
+                <h1>${currentQue}</h1>
+              `;
+
+                document.body.insertAdjacentElement("afterbegin", queDiv);
+              } else if ((currentIndex) => quiz.results.length) {
+                // noQues()
+                queDiv.innerHTML = `
+                <h1>No More questions</h1>
+              `; //when there is no more questions
+
+                document.body.insertAdjacentElement("afterbegin", queDiv);
+              }
+            }
+            //if an error occurs in try block
+            catch {
+              queDiv.innerHTML = `
+                <h1>No More questions</h1>
+              `; //when there is no more questions
+
+              document.body.insertAdjacentElement("afterbegin", queDiv);
+
+              let a = document.getElementById('buttons').style.display = "none"               
+            }
+          };
+
+          ansTrue = () => {
+            //if the answer is right
+            if (quiz.results[currentIndex].correct_answer === "True") {
+              document.getElementById("trueAns").textContent = "Correct";
+              document.getElementById("trueAns").style.backgroundColor =
+                "rgb(18, 146, 50)";
+            } else {
+              document.getElementById("trueAns").textContent = "Wrong";
+              document.getElementById("trueAns").style.backgroundColor =
+                "rgb(180, 18, 18)";
+            }
+
+            //display next question after a while
+            setTimeout(() => {
+              skipQue();
+            }, 1000);
+
+            displayQuestion();
+          };
+
+          ansFalse = () => {
+            if (quiz.results[currentIndex].correct_answer === "False") {
+              document.getElementById("falseAns").textContent = "Correct";
+              document.getElementById("falseAns").style.backgroundColor =
+                "rgb(18, 146, 50)";
+            } else {
+              document.getElementById("falseAns").textContent = "Wrong";
+              document.getElementById("falseAns").style.backgroundColor =
+                "rgb(180, 18, 18)";
+            }
+
+            setTimeout(() => {
+              skipQue();
+            }, 1000);
+
+            displayQuestion();
+          };
+
+          //to skip questions
+          skipQue = () => {
+            currentIndex++;
+            document.getElementById("trueAns").textContent = "True";
+            document.getElementById("trueAns").style.backgroundColor =
+              "rgb(65, 110, 207)";
+            document.getElementById("falseAns").textContent = "False";
+            document.getElementById("falseAns").style.backgroundColor =
+              "rgb(65, 110, 207)";
+            displayQuestion();
+          };
+
+          displayQuestion();
+        });
+    </script>
+  </body>
+</html>
